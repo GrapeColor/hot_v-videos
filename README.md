@@ -6,4 +6,6 @@
 
 ## 導入方法
 以下のURLから導入できます。導入後はサーバー内で適切な役職を与えてください。  
-https://discordapp.com/api/oauth2/authorize?client_id=635189399277142038&permissions=0&scope=bot
+https://discordapp.com/api/oauth2/authorize?client_id=635189399277142038&permissions=0&scope=bot  
+  
+（※このBOTは仮運用中のものであり、動作する保証はできません。自己責任でお願いします。）
