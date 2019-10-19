@@ -22,7 +22,6 @@ end
 bot.command "おすすめ".to_sym do |event|
   # GETリクエスト
   response = Net::HTTP.get_response(rank_uri)
-  puts "HTTP Status Code: " + response.code
   
   html = Nokogiri::HTML.parse(response.body, nil, 'UTF-8')
   
