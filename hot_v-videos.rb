@@ -3,8 +3,10 @@ require 'nokogiri'
 require 'dotenv'
 require 'discordrb'
 
-# 取得するURI
+# グローバル変数初期化
 rank_uri = URI.parse("https://virtual-youtuber.userlocal.jp/movies?range=48h")
+last_time = Time.new
+video_uris = []
 
 # BOT初期化
 Dotenv.load
@@ -16,18 +18,24 @@ bot = Discordrb::Commands::CommandBot.new(
 )
 
 bot.ready do
-  bot.game = "?おすすめ"
+  bot.game = bot.prefix + "おすすめ"
 end
 
+# 'おすすめ'コマンド
 bot.command "おすすめ".to_sym do |event|
-  # GETリクエスト
-  response = Net::HTTP.get_response(rank_uri)
-  
-  html = Nokogiri::HTML.parse(response.body, nil, 'UTF-8')
-  
-  video_uris = []
-  html.css('.item-video.primary').each_with_index do |item, index|
-    video_uris << { rank: index + 1, uri: item['data-video-url'] }
+  # 10分キャッシュ
+  if Time.now - last_time >= 600 || video_uris == []
+    # GETリクエスト
+    response = Net::HTTP.get_response(rank_uri)
+    html = Nokogiri::HTML.parse(response.body, nil, 'UTF-8')
+    
+    # ランキング配列作成
+    video_uris = html.css('.item-video.primary').map.with_index(1) do |item, index|
+      next if item['data-video-url']
+      { rank: index, uri: item['data-video-url'] }
+    end
+
+    last_time = Time.now
   end
 
   # ランキング取得失敗
@@ -38,7 +46,7 @@ bot.command "おすすめ".to_sym do |event|
 
   respod_video = video_uris.sample
   event << "**" + respod_video[:rank].to_s + "位**：" + respod_video[:uri]
-  event << "（User Local再生数ランキング(48時間)より取得）"
+  event << "（User Local再生数ランキング(48時間)より）"
 end
 
 bot.run
