@@ -5,7 +5,7 @@ require 'discordrb'
 
 # グローバル変数初期化
 rank_uri = URI.parse("https://virtual-youtuber.userlocal.jp/movies?range=48h")
-last_time = Time.new
+last_time = Time.new(0)
 video_uris = []
 
 # BOT初期化
@@ -21,10 +21,10 @@ bot.ready do
   bot.game = bot.prefix + "おすすめ"
 end
 
-# 'おすすめ'コマンド
-bot.command "おすすめ".to_sym do |event|
+# キャッシュ更新
+bot.heartbeat do
   # 10分キャッシュ
-  if Time.now - last_time >= 600 || video_uris == []
+  if Time.now - last_time >= 600
     # GETリクエスト
     response = Net::HTTP.get_response(rank_uri)
     html = Nokogiri::HTML.parse(response.body, nil, 'UTF-8')
@@ -37,7 +37,10 @@ bot.command "おすすめ".to_sym do |event|
 
     last_time = Time.now
   end
+end
 
+# 'おすすめ'コマンド
+bot.command "おすすめ".to_sym do |event|
   # ランキング取得失敗
   if video_uris == []
     event << "ランキングを取得できませんでした(m´・ω・｀)m ｺﾞﾒﾝ…"
