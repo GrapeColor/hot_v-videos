@@ -31,9 +31,9 @@ bot.command "おすすめ".to_sym do |event|
     
     # ランキング配列作成
     video_uris = html.css('.item-video.primary').map.with_index(1) do |item, index|
-      next if item['data-video-url']
+      next if !(item['data-video-url'])
       { rank: index, uri: item['data-video-url'] }
-    end
+    end.compact
 
     last_time = Time.now
   end
@@ -44,6 +44,7 @@ bot.command "おすすめ".to_sym do |event|
     next
   end
 
+  # メッセージ生成
   respod_video = video_uris.sample
   event << "**" + respod_video[:rank].to_s + "位**：" + respod_video[:uri]
   event << "（User Local再生数ランキング(48時間)より）"
