@@ -21,22 +21,21 @@ bot.ready do
   bot.game = bot.prefix + "おすすめ"
 end
 
-# キャッシュ更新
+# キャッシュ(10分)更新
 bot.heartbeat do
-  # 10分キャッシュ
-  if Time.now - last_time >= 600
-    # GETリクエスト
-    response = Net::HTTP.get_response(rank_uri)
-    html = Nokogiri::HTML.parse(response.body, nil, 'UTF-8')
-    
-    # ランキング配列作成
-    video_uris = html.css('.item-video.primary').map.with_index(1) do |item, index|
-      next if !(item['data-video-url'])
-      { rank: index, uri: item['data-video-url'] }
-    end.compact
+  next if Time.now - last_time < 600
 
-    last_time = Time.now
-  end
+  # HTML取得
+  response = Net::HTTP.get_response(rank_uri)
+  html = Nokogiri::HTML.parse(response.body, nil, 'UTF-8')
+  
+  # ランキング配列作成
+  video_uris = html.css('.item-video.primary').map.with_index(1) do |item, index|
+    next if !(item['data-video-url'])
+    { rank: index, uri: item['data-video-url'] }
+  end.compact
+
+  last_time = Time.now
 end
 
 # 'おすすめ'コマンド
