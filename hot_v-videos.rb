@@ -45,8 +45,10 @@ class HotVVideos
     end
     
     # おすすめコマンド
-    @bot.command :おすすめ do |event, *args|
-      get_video(event, args[0])
+    @bot.command :おすすめ do |event|
+      content = event.content
+      content.slice!("#{@bot.prefix}おすすめ ")
+      get_video(event, content)
     end
 
     @bot.command :オプション do |event|
@@ -132,7 +134,7 @@ class HotVVideos
 以下の文字列を付けると、そのグループごとの新着動画を紹介
 DESC
       @offices.each do |office, value|
-        embed.description += "**`#{office}`** "
+        embed.description += "**`#{office}`**　"
       end
     end
   end
