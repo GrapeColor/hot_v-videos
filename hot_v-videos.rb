@@ -9,18 +9,18 @@ class HotVVideos
   FAILURE_MSG = "動画を取得できませんでした(m´・ω・｀)m ｺﾞﾒﾝ…"
 
   def initialize(bot_token)
-    # インスタンス変数初期化
-    ## グループ一覧読み込み
     @offices = open('offices.yml', 'r') {|f| YAML.load(f) }
+
     ## 各新着動画URIをパース
     @office_uris = @offices.map do |office, value|
       [office, URI.parse("https://virtual-youtuber.userlocal.jp/movies?office=#{value}")]
     end.to_h
     @ranking_uri = URI.parse("https://virtual-youtuber.userlocal.jp/movies?range=48h")
+
     ## アーカイブURL配列初期化
     @office_videos  = @offices.keys.map {|office| [office, []] }.to_h
     @ranking_videos = []
-    
+
     # BOT初期化
     @bot = Discordrb::Commands::CommandBot.new(
       token: bot_token,
@@ -28,14 +28,14 @@ class HotVVideos
       help_command: false,
       ignore_bots: true
     )
-    
+
     # BOTステータス初期化
     @bot.ready do
       @bot.game = "#{@bot.prefix}おすすめ | #{@bot.prefix}オプション"
       cache_update
       @last_time = Time.now
     end
-    
+
     # キャッシュ更新
     @bot.heartbeat do
       if Time.now - @last_time > 600
@@ -43,7 +43,7 @@ class HotVVideos
         @last_time = Time.now
       end
     end
-    
+
     # おすすめコマンド
     @bot.command :おすすめ do |event|
       content = event.content
@@ -55,14 +55,14 @@ class HotVVideos
       send_options(event)
     end
   end
-  
+
   # BOT起動
   def run(async = false)
     @bot.run(async)
   end
-  
+
   private
-  
+
   # ランキングから動画を取得
   def get_video(event, office)
     # 48時間ランキングから取得
@@ -91,7 +91,7 @@ class HotVVideos
     # 48時間ランキング取得
     response = Net::HTTP.get_response(@ranking_uri)
     html = Nokogiri::HTML.parse(response.body, nil, 'UTF-8')
-  
+
     @ranking_videos = html.css('.item-video').map.with_index(1) do |item, rank|
       next unless item['data-video-url']
       { rank: rank, uri: item['data-video-url'] }
