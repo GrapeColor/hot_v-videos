@@ -8,8 +8,8 @@ class HotVVideos
   RANKING_RANGE = 50  # 48時間ランキングのデフォルト取得範囲
   FAILURE_MSG = "動画を取得できませんでした(m´・ω・｀)m ｺﾞﾒﾝ…"
 
-  def initialize(bot_token)
-    @offices = open('offices.yml', 'r') {|f| YAML.load(f) }
+  def initialize(bot_token, offices_path)
+    @offices = open(offices_path, 'r') {|f| YAML.load(f) }
 
     ## 各新着動画URIをパース
     @office_uris = @offices.map do |office, value|
@@ -32,10 +32,8 @@ class HotVVideos
     # BOTステータス初期化
     @bot.ready do
       @bot.game = "#{@bot.prefix}おすすめ | #{@bot.prefix}オプション"
-      cache_update
-      @last_time = Time.now
     end
-
+    
     # キャッシュ更新
     @bot.heartbeat do
       if Time.now - @last_time > 600
@@ -43,17 +41,20 @@ class HotVVideos
         @last_time = Time.now
       end
     end
-
+    
     # おすすめコマンド
     @bot.command :おすすめ do |event, *args|
       get_video(event, args.join(" "))
     end
-
+    
     @bot.command :オプション do |event|
       send_options(event)
     end
+    
+    cache_update
+    @last_time = Time.now
   end
-
+  
   # BOT起動
   def run(async = false)
     @bot.run(async)
