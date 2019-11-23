@@ -45,10 +45,8 @@ class HotVVideos
     end
 
     # おすすめコマンド
-    @bot.command :おすすめ do |event|
-      content = event.content
-      content.slice!("#{@bot.prefix}おすすめ ")
-      get_video(event, content)
+    @bot.command :おすすめ do |event, *args|
+      get_video(event, args.join(" "))
     end
 
     @bot.command :オプション do |event|
@@ -66,7 +64,7 @@ class HotVVideos
   # ランキングから動画を取得
   def get_video(event, office)
     # 48時間ランキングから取得
-    if office =~ /^\d+$/ || office.nil?
+    if office =~ /^\d+$/ || office.empty?
       range = $&.to_i
       range = RANKING_RANGE if range < 1
       range -= 1
