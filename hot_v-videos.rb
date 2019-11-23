@@ -72,7 +72,7 @@ class HotVVideos
 
       respod_video = @ranking_videos[0..range].sample
       return FAILURE_MSG if respod_video.nil?
-      return "**#{respod_video[:rank]}位**: #{respod_video[:uri]}\n（User Local48時間再生数ランキングより）"
+      return "**#{respod_video[:rank]}位**: #{respod_video[:uri]}\n（User Local 48時間再生数ランキングより）"
     end
 
     # 各グループの新着動画一覧から取得
@@ -82,7 +82,7 @@ class HotVVideos
     end
     respod_video = @office_videos[office].sample
     return FAILURE_MSG if respod_video.nil?
-    return "#{respod_video}\n（User Local**#{office}**新着動画一覧より）"
+    return "#{respod_video}\n（User Local **#{office}** 新着動画一覧より）"
   end
 
   # ランキングキャッシュ更新
