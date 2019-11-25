@@ -6,6 +6,7 @@ require 'discordrb'
 class HotVVideos
   VIDEOS_MIN = 30  # 各新着動画の最低数
   RANKING_DEFAULT = 50  # 48時間ランキングのデフォルト取得範囲
+  RANKING_MAX     = 150 # 48時間ランキングの最大取得範囲
   YOUTUBE_URL = "https://www.youtube.com/watch?v="
   USER_LOCAL_URL = "https://virtual-youtuber.userlocal.jp"
   FAILURE_MSG = "動画を取得できませんでした (m´・ω・｀)m ｺﾞﾒﾝ…"
@@ -73,6 +74,7 @@ class HotVVideos
     if office =~ /^\d+$/ || office.empty?
       range = $&.to_i
       range = RANKING_DEFAULT if range < 1
+      range = RANKING_MAX if range > RANKING_MAX
 
       video_data = @ranking_videos[0..(range - 1)].sample
       return FAILURE_MSG if video_data.nil?
@@ -101,7 +103,7 @@ class HotVVideos
       USER_LOCAL_URL + video_data[:channel],
       video_data[:title],
       video_data[:id],
-      "User Local [#{office}新着動画一覧](#{@office_uris[office].to_s}) より"
+      "User Local [#{office} 新着動画一覧](#{@office_uris[office].to_s}) より"
     )
     return
   end
