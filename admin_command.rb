@@ -1,4 +1,4 @@
-class QuickPoll
+class HotVVideos
   private
 
   def set_admin_command
