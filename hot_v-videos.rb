@@ -2,6 +2,8 @@ require 'net/http'
 require 'nokogiri'
 require 'discordrb'
 
+require_relative './admin_command'
+
 class HotVVideos
   VIDEOS_MIN = 30  # 各新着動画の最低数
   RANKING_DEFAULT = 50  # 48時間ランキングのデフォルト取得範囲
@@ -42,7 +44,7 @@ class HotVVideos
 
     # BOTステータス初期化
     @bot.ready do
-      @bot.game = "#{@bot.prefix}おすすめ | #{@bot.prefix}オプション"
+      @bot.game = "4月いっぱいでおしまい☆"
     end
 
     # キャッシュ更新
@@ -62,6 +64,8 @@ class HotVVideos
     @bot.command :オプション do |event|
       send_options(event)
     end
+
+    set_admin_command
   end
 
   # BOT起動
